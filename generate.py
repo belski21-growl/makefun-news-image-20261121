@@ -11,6 +11,8 @@ Run: python3 generate.py  ->  writes entry.png next to itself.
 """
 from PIL import Image, ImageDraw, ImageFont
 
+import brief_art  # Mini illustrations for the 10 briefs (4-13).
+
 W, H = 1024, 1024
 PAPER = (246, 241, 231)
 INK = (17, 17, 17)
@@ -271,6 +273,10 @@ def draw_gulf(d, x, y, w, h):
     # Smoke puffs.
     d.ellipse([bx - 16, by + 8, bx + 2, by + 20], fill=(120, 120, 130))
     d.ellipse([x + w - 78, y + 24, x + w - 60, y + 34], fill=(120, 120, 130))
+    # Labels (top entries label their lead art; ours was mute).
+    d.text((bx + 12, by - 6), "BAHRAIN", font=SANS_B(9), fill=(255, 255, 255))
+    d.text((x + 8, y + 24), "2 TANKERS HIT", font=SANS_B(9),
+           fill=(255, 255, 255))
 
 
 def draw_quake(d, x, y, w, h):
@@ -295,6 +301,9 @@ def draw_quake(d, x, y, w, h):
         yy = y + h // 2 + (amp * math.sin(i / 3.0) if i % 12 else -amp)
         pts.append((x + i, yy))
     d.line(pts, fill=RED, width=2)
+    # Depth label (top entries carry it: 108 km, per USGS/IGP consensus).
+    d.text((x + w - 88, y + h - 16), "108 km deep", font=SANS_B(9),
+           fill=(255, 255, 255))
 
 
 def draw_cop31(d, x, y, w, h):
@@ -521,37 +530,41 @@ def draw():
     d.rectangle([18, 392, 1006, 394], fill=INK)
 
     # ---- 10 illustrated briefs, 5 x 2 --------------------------------------
+    # Each cell: a 40px mini-illustration strip (brief_art) on top — the
+    # top-20 pattern (rank 1/2: every brief is an illustrated panel with
+    # a big number) — then number + kicker + chip, headline, deck.
     bx0, by0 = 18, 402
-    cw2, ch2, gx2, gy2 = 190, 88, 9, 8
+    cw2, ch2, gx2, gy2 = 190, 120, 9, 8
     for idx, (icon, region, kicker, head, deck, status) in enumerate(BRIEFS):
         row, col = divmod(idx, 5)
         x = bx0 + col * (cw2 + gx2)
         y = by0 + row * (ch2 + gy2)
-        # Region-coloured left border.
-        d.rectangle([x, y, x + 3, y + ch2 - 4], fill=REGION_COLORS[region])
+        # Mini illustration strip (full cell width, 40px tall).
+        brief_art.ART[icon](d, x, y, cw2, 40)
+        # Region-coloured left border runs the text area.
+        d.rectangle([x, y + 40, x + 3, y + ch2 - 4], fill=REGION_COLORS[region])
         num = str(idx + 4)
         nf = SANS_B(11)
-        nw = d.textlength(num, font=nf)
-        d.text((x + 6, y + 1), num, font=nf, fill=RED)
-        ICONS[icon](d, x + 22, y)
-        d.text((x + 52, y + 6), kicker, font=SANS_B(9), fill=MUTED)
-        chip_small(d, x + cw2 - 6, y + 17, status)
+        d.text((x + 6, y + 44), num, font=nf, fill=RED)
+        kw2 = d.textlength(num, font=nf)
+        d.text((x + 10 + kw2, y + 45), kicker, font=SANS_B(9), fill=MUTED)
+        chip_small(d, x + cw2 - 6, y + 57, status)
         hf = SANS_B(12)
         hlines = fit_lines(d, head, hf, cw2 - 6, 2, tag="brief%d-head" % (idx + 4))
-        hy = y + 28
+        hy = y + 69
         for ln in hlines:
             d.text((x + 6, hy), ln, font=hf, fill=INK)
-            hy += 15
+            hy += 14
         df3 = SANS(10)
         dlines = fit_lines(d, deck, df3, cw2 - 6, 2, tag="brief%d-deck" % (idx + 4))
         dy = hy + 1
         for ln in dlines:
             d.text((x + 6, dy), ln, font=df3, fill=MUTED)
-            dy += 13
-    d.rectangle([18, 594, 1006, 596], fill=INK)
+            dy += 12
+    d.rectangle([18, 658, 1006, 660], fill=INK)
 
     # ---- ALSO ON SATURDAY: 23 more stories, 2 columns --------------------
-    ay = 604
+    ay = 668
     tf = SANS_B(13)
     d.text((18, ay), "ALSO ON SATURDAY — 23 MORE STORIES", font=tf, fill=INK)
     af = SANS(11)
@@ -565,28 +578,28 @@ def draw():
         lines = fit_lines(d, line, af, col_w, 1, tag="also%d" % (idx + 14))
         d.text((x, y), lines[0], font=af, fill=INK)
 
-    # ---- DATE CHECK box (bottom left) --------------------------------------
-    dx0, dy0 = 18, 824
-    d.rectangle([dx0, dy0, dx0 + 638, dy0 + 156], fill=(233, 226, 208),
+    # ---- DATE CHECK as a compact horizontal band (top-20 pattern: rank 1/2
+    # use a 2-line strip, not a tall box — the freed ~90px pays for the
+    # taller illustrated brief grid above). -------------------------------
+    dx0, dy0 = 18, 892
+    d.rectangle([dx0, dy0, dx0 + 638, dy0 + 62], fill=(233, 226, 208),
                 outline=RED, width=2)
-    d.text((dx0 + 12, dy0 + 8), "DATE CHECK — WHAT WE LEFT OUT",
-           font=SANS_B(13), fill=RED)
-    d.text((dx0 + 12, dy0 + 28),
-           "These big stories are NOT from Saturday 21 November, so they are not in this paper:",
-           font=SANS(10), fill=INK)
-    cf = SANS(11)
-    for i, (story, when) in enumerate(DATE_CHECK):
-        y = dy0 + 50 + i * 14
-        d.text((dx0 + 12, y), "×  %s" % story, font=cf, fill=INK)
-        ww = d.textlength(when, font=SANS_B(11))
-        d.text((dx0 + 638 - 12 - ww, y), when, font=SANS_B(11), fill=RED)
+    d.text((dx0 + 12, dy0 + 6), "DATE CHECK — WHAT WE LEFT OUT",
+           font=SANS_B(12), fill=RED)
+    dc_items = ";  ".join("× %s (%s)" % (s, w) for s, w in DATE_CHECK)
+    dc_lines = fit_lines(d, "Not Saturday news: " + dc_items, SANS(10),
+                         638 - 24, 3, tag="datecheck")
+    yy = dy0 + 24
+    for ln in dc_lines:
+        d.text((dx0 + 12, yy), ln, font=SANS(10), fill=INK)
+        yy += 13
 
     # ---- World map with numbered pins (right column) -----------------------
-    mx0, my0, mw, mh = 668, 604, 338, 238
+    mx0, my0, mw, mh = 668, 668, 338, 216
     d.rectangle([mx0, my0, mx0 + mw, my0 + mh], fill=PANEL, outline=RULE, width=1)
     d.text((mx0 + 10, my0 + 8), "WHERE IT HAPPENED — PINS 1–13",
            font=SANS_B(12), fill=INK)
-    map_x, map_y, map_w, map_h = mx0 + 8, my0 + 30, mw - 16, 176
+    map_x, map_y, map_w, map_h = mx0 + 8, my0 + 30, mw - 16, 150
     d.rectangle([map_x, map_y, map_x + map_w, map_y + map_h], fill=MAPSEA)
     for poly in CONTINENTS:
         pts = [(map_x + fx * map_w, map_y + fy * map_h) for fx, fy in poly]
@@ -606,15 +619,15 @@ def draw():
                   outline=(255, 255, 255), width=1)
         tw = d.textlength(str(num), font=pf)
         d.text((px - tw / 2, py - 5), str(num), font=pf, fill=(255, 255, 255))
-    d.text((mx0 + 10, my0 + 212),
+    d.text((mx0 + 10, my0 + 190),
            "Pins 1–13 mark the drawn stories. 4 is in orbit:",
            font=SANS(10), fill=MUTED)
-    d.text((mx0 + 10, my0 + 226),
+    d.text((mx0 + 10, my0 + 204),
            "BepiColombo at Mercury.",
            font=SANS(10), fill=MUTED)
 
     # ---- Honesty note + sources (right column, below map) ------------------
-    hy = 850
+    hy = 892
     d.text((mx0, hy), "OUR PROMISE", font=SANS_B(11), fill=RED)
     promise = ("Every story here happened, or was first reported, on Saturday "
                "21 November 2026 in at least one time zone. Claims are "
@@ -633,11 +646,11 @@ def draw():
         yy += 13
 
     # ---- Footer ------------------------------------------------------------
-    d.rectangle([18, 994, 1006, 996], fill=INK)
+    d.rectangle([18, 1000, 1006, 1002], fill=INK)
     foot = "THE WORLD IN ONE DAY  •  SATURDAY 21 NOVEMBER 2026  •  ONE DAY, EVERY CONTINENT"
     ff = SANS_B(11)
     fw = d.textlength(foot, font=ff)
-    d.text(((W - fw) / 2, 1004), foot, font=ff, fill=MUTED)
+    d.text(((W - fw) / 2, 1008), foot, font=ff, fill=MUTED)
 
     return img
 
