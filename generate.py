@@ -275,7 +275,12 @@ def draw_gulf(d, x, y, w, h):
     d.ellipse([x + w - 78, y + 24, x + w - 60, y + 34], fill=(120, 120, 130))
     # Labels (top entries label their lead art; ours was mute).
     d.text((bx + 12, by - 6), "BAHRAIN", font=SANS_B(9), fill=(255, 255, 255))
-    d.text((x + 8, y + 24), "2 TANKERS HIT", font=SANS_B(9),
+    # IRAN on the top landmass (dark on tan); the strait named in the
+    # sea channel, stacked under the tanker label.
+    d.text((x + 10, y + 4), "IRAN", font=SANS_B(9), fill=(17, 17, 17))
+    d.text((x + 8, y + 21), "2 TANKERS HIT", font=SANS_B(8),
+           fill=(255, 255, 255))
+    d.text((x + 8, y + 31), "STRAIT OF HORMUZ", font=SANS_B(8),
            fill=(255, 255, 255))
 
 
@@ -303,6 +308,10 @@ def draw_quake(d, x, y, w, h):
     d.line(pts, fill=RED, width=2)
     # Depth label (top entries carry it: 108 km, per USGS/IGP consensus).
     d.text((x + w - 88, y + h - 16), "108 km deep", font=SANS_B(9),
+           fill=(255, 255, 255))
+    # Place labels (top entries carry them: ONCORES, LIMA).
+    d.text((x + 245, y + 6), "ONCORES", font=SANS_B(9), fill=(17, 17, 17))
+    d.text((x + 8, y + h - 14), "LIMA", font=SANS_B(9),
            fill=(255, 255, 255))
 
 
@@ -582,7 +591,7 @@ def draw():
     # use a 2-line strip, not a tall box — the freed ~90px pays for the
     # taller illustrated brief grid above). -------------------------------
     dx0, dy0 = 18, 892
-    d.rectangle([dx0, dy0, dx0 + 638, dy0 + 62], fill=(233, 226, 208),
+    d.rectangle([dx0, dy0, dx0 + 638, dy0 + 88], fill=(233, 226, 208),
                 outline=RED, width=2)
     d.text((dx0 + 12, dy0 + 6), "DATE CHECK — WHAT WE LEFT OUT",
            font=SANS_B(12), fill=RED)
@@ -593,6 +602,15 @@ def draw():
     for ln in dc_lines:
         d.text((dx0 + 12, yy), ln, font=SANS(10), fill=INK)
         yy += 13
+    # "Not yet" row + verification legend (top-20 pattern: rank 1/5).
+    d.text((dx0 + 12, dy0 + 63), "Not yet: ", font=SANS_B(10), fill=RED)
+    d.text((dx0 + 12 + int(d.textlength("Not yet: ", font=SANS_B(10))),
+            dy0 + 63),
+           "COP31 final text  •  Las Vegas GP result (Sun 22 Nov)",
+           font=SANS(10), fill=INK)
+    d.text((dx0 + 12, dy0 + 76),
+           "HOW WE CHECKED:  CONFIRMED = 2+ outlets  •  OFFICIAL = official source",
+           font=SANS(9), fill=MUTED)
 
     # ---- World map with numbered pins (right column) -----------------------
     mx0, my0, mw, mh = 668, 668, 338, 216

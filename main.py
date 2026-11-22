@@ -18,12 +18,13 @@ import sys
 from pathlib import Path
 
 # --- The shipped artwork, measured when it was packed ----------------------
-# entry.png (round 3): 203399 bytes; SHA-256 verified live with sha256sum
-# before this file was written. If either number ever disagrees, the artwork
-# on disk is not the artwork this program was written to publish.
+# entry.png (round 3, Goldfish-r3 fix round): 211680 bytes; SHA-256 verified
+# live with sha256sum before this file was written. If either number ever
+# disagrees, the artwork on disk is not the artwork this program was
+# written to publish.
 ARTWORK_NAME = "entry.png"
-ARTWORK_SIZE = 203399
-ARTWORK_SHA256 = "72c9de8a65cfcbd7d69161d14a808fe8d6873c071a72ec84532c124ca191461e"
+ARTWORK_SIZE = 211680
+ARTWORK_SHA256 = "69070963c30202166a7f568c914afd1aa21615ce221fb202d45a0c49e4c73051"
 
 # A whole PNG opens with this 8-byte signature and ends with an IEND chunk.
 PNG_SIGNATURE = b"\x89PNG\r\n\x1a\n"

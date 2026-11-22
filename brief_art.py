@@ -54,9 +54,13 @@ def art_planet(d, x, y, w, h):
     _stars(d, x, y, w, h)
     d.ellipse([x + w - 52, y + 4, x + w - 12, y + h - 12], fill=(205, 120, 50))
     d.ellipse([x + w - 44, y + 10, x + w - 34, y + 20], fill=(160, 85, 35))
-    d.rectangle([x + 72, y + 14, x + 96, y + 22], fill=WHITE)
-    d.rectangle([x + 60, y + 17, x + 72, y + 19], fill=(150, 150, 160))
-    d.rectangle([x + 96, y + 17, x + 108, y + 19], fill=(150, 150, 160))
+    # Thin orbit ring around Mercury (enriches the scene, clears the text).
+    d.ellipse([x + w - 58, y + 2, x + w - 6, y + h - 4],
+              outline=(255, 180, 90), width=1)
+    # Spacecraft shifted right (+12px) so its wing clears the "S" of 8 YRS.
+    d.rectangle([x + 84, y + 14, x + 108, y + 22], fill=WHITE)
+    d.rectangle([x + 72, y + 17, x + 84, y + 19], fill=(150, 150, 160))
+    d.rectangle([x + 108, y + 17, x + 120, y + 19], fill=(150, 150, 160))
     _bignum(d, x, y + h - 26, "8 YRS", fill=YELLOW)
 
 
@@ -76,10 +80,12 @@ def art_flame(d, x, y, w, h):
 def art_shield(d, x, y, w, h):
     """#6 Riyadh intercepts: missile trails, orange intercept flashes."""
     d.rectangle([x, y, x + w, y + h], fill=NIGHT)
-    for t in range(0, 9):
-        px = x + 20 + t * 16
-        py = y + 30 - t * 2
-        d.ellipse([px, py, px + 3, py + 3], fill=WHITE)
+    # Small white missile silhouette, top-left, ABOVE the text band
+    # (replaces the old low dot trail whose first dot read as "3. DOWN").
+    d.polygon([(x + 16, y + 8), (x + 34, y + 6), (x + 40, y + 10),
+               (x + 34, y + 14), (x + 16, y + 12)], fill=WHITE)
+    d.polygon([(x + 12, y + 8), (x + 16, y + 10), (x + 12, y + 12)],
+              fill=(255, 150, 40))
     for t in range(0, 7):
         px = x + 60 + t * 14
         py = y + 8 + t * 3
@@ -93,17 +99,21 @@ def art_shield(d, x, y, w, h):
 
 
 def art_cuffs(d, x, y, w, h):
-    """#7 Chapo captured: handcuffs + red FBI-style badge."""
+    """#7 Chapo captured: handcuffs + red FBI-style badge.
+
+    Cuffs shrunk ~20% and moved right/up so the first ring clears the
+    "D" of CAPTURED (r3: the ring sat on the D). Text also dropped to 16.
+    """
     d.rectangle([x, y, x + w, y + h], fill=(40, 30, 30))
-    d.ellipse([x + 104, y + 8, x + 126, y + 30], outline=WHITE, width=3)
-    d.ellipse([x + 130, y + 8, x + 152, y + 30], outline=WHITE, width=3)
-    d.line([(x + 126, y + 19), (x + 130, y + 19)], fill=WHITE, width=2)
-    d.rectangle([x + 158, y + 6, x + 186, y + 32], fill=RED)
+    d.ellipse([x + 118, y + 6, x + 136, y + 24], outline=WHITE, width=3)
+    d.ellipse([x + 140, y + 6, x + 158, y + 24], outline=WHITE, width=3)
+    d.line([(x + 136, y + 15), (x + 140, y + 15)], fill=WHITE, width=2)
+    d.rectangle([x + 164, y + 6, x + 186, y + 28], fill=RED)
     from PIL import ImageFont
     _fbi = ImageFont.truetype(
-        "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 11)
-    d.text((x + 166, y + 12), "FBI", font=_fbi, fill=WHITE)
-    _bignum(d, x, y + h - 26, "CAPTURED", size=17)
+        "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 10)
+    d.text((x + 170, y + 11), "FBI", font=_fbi, fill=WHITE)
+    _bignum(d, x, y + h - 26, "CAPTURED", size=16)
 
 
 def art_chip(d, x, y, w, h):
@@ -176,6 +186,12 @@ def art_cricket(d, x, y, w, h):
 def art_star(d, x, y, w, h):
     """#13 Rutte Warsaw: blue sky, NATO star, plane silhouette."""
     d.rectangle([x, y, x + w, y + h], fill=(24, 60, 110))
+    # Warsaw skyline silhouettes, bottom-left (below the jet, clear of
+    # the WARSAW text which ends ~x+78).
+    for bx, bw, bh in [(x + 84, 8, 10), (x + 96, 8, 14), (x + 108, 8, 8)]:
+        d.rectangle([bx, y + h - bh, bx + bw, y + h], fill=(10, 20, 40))
+        d.rectangle([bx + 2, y + h - bh + 3, bx + 4, y + h - bh + 5],
+                    fill=(255, 214, 120))
     cx, cy = x + w - 40, y + h // 2
     d.polygon([(cx, cy - 14), (cx + 3, cy - 3), (cx + 14, cy),
                (cx + 3, cy + 3), (cx, cy + 14), (cx - 3, cy + 3),
