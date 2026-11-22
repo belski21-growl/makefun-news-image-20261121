@@ -64,7 +64,7 @@ LEADS = [
      "CONFIRMED"),
     ("JUNIN, PERU  •  USGS",
      "M6.7 quake shakes Peru, felt in Lima",
-     "00:09 UTC Saturday, 30 km from Junin; no deaths reported, "
+     "00:09 UTC Saturday, near Carhuamayo; no deaths reported, "
      "homes cracked.",
      "OFFICIAL"),
     ("ANTALYA, TÜRKIYE  •  CLIMATE  •  AP",
@@ -159,7 +159,7 @@ DATE_CHECK = [
 # "THE DAY IN UTC" — timed events, Saturday 21 November 2026 (from top-10
 # consensus: rank 1 / rank 10 timelines).
 UTC_EVENTS = [
-    ("00:09", "Peru M6.7 quake"),
+    ("00:09", "Peru quake"),
     ("05:00", "Tanker hit off Khasab"),
     ("09:42", "Banda Sea M6.8"),
     ("12:00", "EU-Indonesia pact"),
@@ -190,7 +190,7 @@ CONTINENTS = [
 # (story number, lon, lat, dx, dy) — dx/dy nudge the pin so the Europe
 # cluster does not collide. Story 4 (Mercury) is drawn in orbit, top right.
 PINS = [
-    (1, 50.6, 26.2, 0, 0), (2, -76.0, -11.0, 0, 0), (3, 30.7, 36.9, 0, -6),
+    (1, 50.6, 26.2, 12, -10), (2, -76.0, -11.0, 0, 0), (3, 30.7, 36.9, 0, -6),
     (5, 30.5, 50.4, 9, 0), (6, 46.7, 24.7, 0, 0), (7, -108.5, 25.6, 0, 0),
     (8, -77.0, 38.9, 0, 0), (9, 4.35, 50.85, -7, 2), (10, 12.57, 55.68, -4, -7),
     (11, -115.1, 36.2, 0, 0), (12, 174.8, -41.3, 0, -6), (13, 21.0, 52.2, 2, -2),
@@ -336,6 +336,16 @@ def chip(d, x, y, text):
     w = int(d.textlength(text, font=f)) + 10
     d.rectangle([x, y, x + w, y + 13], fill=color)
     d.text((x + 5, y + 2), text, font=f, fill=(255, 255, 255))
+    return w
+
+
+def chip_small(d, right, y, text):
+    """Compact verification chip (10px tall), right-aligned to `right`."""
+    color = GREEN if text == "CONFIRMED" else BLUE
+    f = SANS_B(7)
+    w = int(d.textlength(text, font=f)) + 8
+    d.rectangle([right - w, y, right, y + 10], fill=color)
+    d.text((right - w + 4, y + 1), text, font=f, fill=(255, 255, 255))
     return w
 
 
@@ -525,6 +535,7 @@ def draw():
         d.text((x + 6, y + 1), num, font=nf, fill=RED)
         ICONS[icon](d, x + 22, y)
         d.text((x + 52, y + 6), kicker, font=SANS_B(9), fill=MUTED)
+        chip_small(d, x + cw2 - 6, y + 17, status)
         hf = SANS_B(12)
         hlines = fit_lines(d, head, hf, cw2 - 6, 2, tag="brief%d-head" % (idx + 4))
         hy = y + 28
