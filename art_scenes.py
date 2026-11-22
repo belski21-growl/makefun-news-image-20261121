@@ -20,6 +20,8 @@ patterns, no randomness), image-entry (verify SOI/EOI + full decode).
 """
 import math
 
+import art_polish_r3d as polish  # Poles r3d: gradasi/bayangan/kilau.
+
 RED = (176, 30, 36)
 INK = (17, 17, 17)
 WHITE = (255, 255, 255)
@@ -113,9 +115,17 @@ def scene_gulf(d, x, y, w, h):
     bx, by = x + w // 2 - 10, y + h // 2 + 2
     d.ellipse([bx - 7, by - 7, bx + 7, by + 7], fill=RED,
               outline=WHITE, width=2)
-    # Two tankers: recognisable ships (hull + bridge + funnel + smoke).
-    _ship(d, x + w - 92, y + 12, 40, 9)
-    _ship(d, x + w - 62, y + h - 30, 34, 8)
+    # Two tankers, +20% (m5): recognisable ships (hull + bridge +
+    # funnel + smoke). Bayangan lembut di bawah tiap lambung (M8),
+    # digambar SEBELUM kapal supaya kapal duduk di atas bayangannya.
+    polish.soft_shadow(d, x + w - 72, y + 25, 26, 4, (24, 58, 88))
+    polish.soft_shadow(d, x + w - 46, y + h - 19, 23, 4, (16, 42, 66))
+    _ship(d, x + w - 96, y + 12, 48, 11)
+    _ship(d, x + w - 66, y + h - 31, 41, 10)
+    # Kilau air: garis terang tipis di air terbuka (M8) — A di antara
+    # label kiri dan ledakan Bahrain, B di antara Bahrain dan tanker 1.
+    polish.sea_glints(d, [(x + 100, y + 24, x + 135, y + 24),
+                          (x + 175, y + 40, x + 220, y + 40)])
     # Missile arcs (dotted white): Iran -> Bahrain, Iran -> tanker 1.
     for t in range(0, 11):
         px = x + w // 2 + 30 + t * 4
@@ -141,6 +151,9 @@ def scene_gulf(d, x, y, w, h):
            font=_font("DejaVuSans-Bold.ttf", 8), fill=WHITE)
     d.text((x + w - 96, y + 24), "KHASAB",
            font=_font("DejaVuSans-Bold.ttf", 8), fill=WHITE)
+    # Vignette SANGAT tipis di tepi kiri/kanan zona laut (M8) — paling
+    # akhir supaya di atas laut tapi tidak menyentuh label mana pun.
+    polish.sea_edge_vignette(d, x, y, w, h)
 
 
 def scene_quake(d, x, y, w, h):
@@ -197,7 +210,10 @@ def scene_cop31(d, x, y, w, h):
     """COP31 as a DATA SCENE (rank 1 pattern): globe + thermometer +
     delegate silhouettes + a 9-21 date grid with day 21 highlighted,
     '+1 DAY' and '1.5C' — the summit's own numbers as the picture."""
-    d.rectangle([x, y, x + w, y + h], fill=(222, 236, 220))
+    # Gradasi vertikal halus (M8): mint -> mint muda -> nyaris putih,
+    # digambar DULU supaya globe/termometer/grid/delegasi tetap di atas.
+    polish.soft_vertical_gradient(d, x, y, w, h, (206, 228, 208),
+                                  (224, 238, 222), (244, 247, 240))
     # Globe (left): blue circle, green land blobs, white highlight.
     gx, gy, gr = x + 30, y + 26, 17
     d.ellipse([gx - gr, gy - gr, gx + gr, gy + gr], fill=BLUE)
@@ -207,6 +223,8 @@ def scene_cop31(d, x, y, w, h):
                (gx, gy + 12)], fill=(60, 160, 90))
     d.arc([gx - gr + 3, gy - gr + 3, gx + gr - 8, gy + gr - 8],
           start=200, end=320, fill=WHITE, width=2)
+    # Bayangan gelap tipis di bawah globe (M8).
+    polish.soft_shadow(d, gx, gy + gr + 3, gr + 3, 4, (214, 230, 212))
     # Thermometer (right of globe): white tube, red mercury, 1.5C label.
     tx = x + 58
     d.rectangle([tx, y + 6, tx + 9, y + 38], fill=WHITE,
@@ -235,12 +253,20 @@ def scene_cop31(d, x, y, w, h):
            font=_font("DejaVuSans.ttf", 7), fill=(90, 84, 70))
     d.text((gx0 + 128, gy0 + 19), "+1 DAY",
            font=_font("DejaVuSans-Bold.ttf", 9), fill=RED)
-    # Delegate silhouettes along the bottom + table line.
-    d.line([(x + 108, y + 52), (x + w - 6, y + 52)], fill=INK, width=1)
+    # Delegate silhouettes along the bottom + table line (m6: garis
+    # meja ditebalkan + 2 lembar dokumen putih di depan siluet).
+    d.line([(x + 108, y + 52), (x + w - 6, y + 52)], fill=INK, width=2)
     for i in range(6):
         dx = x + 118 + i * 30
         d.ellipse([dx, y + 38, dx + 10, y + 48], fill=INK)
         d.rectangle([dx - 2, y + 48, dx + 12, y + 52], fill=INK)
+    for doc_x, doc_y in ((x + 134, y + 44), (x + 200, y + 45)):
+        d.rectangle([doc_x, doc_y, doc_x + 14, y + 52], fill=WHITE,
+                    outline=(120, 120, 110), width=1)
+        d.line([(doc_x + 2, doc_y + 3), (doc_x + 12, doc_y + 3)],
+               fill=(150, 150, 145), width=1)
+        d.line([(doc_x + 2, doc_y + 6), (doc_x + 10, doc_y + 6)],
+               fill=(150, 150, 145), width=1)
 
 
 LEAD_SCENES = [scene_gulf, scene_quake, scene_cop31]

@@ -263,3 +263,71 @@ ditulis ulang mengikuti template top-10 ("The World in One Day").
   baris brief 1+2, peta) — 0 tabrakan, 0 teks terpotong; m1 (kotak kuning #5)
   TERTUTUP; grid COP31 9–21 terbaca penuh; semua label lead terbaca.
 - Validasi: entry.png baru 217.521 B, sha 343479fff05ad69936c1a951c0f6fbd076fb8d9fd004e8e7a7537e511d932e72, SOI/IEND OK, full decode OK (1024×1024 RGB), TRUNCATION-RISK: none. main.py lolos cek venv TANPA PIL (python3 -P -s, exit 0, 2 run byte-identical, py_compile OK).
+
+## Poles art r3d (22 Nov 2026 ~15:30 WIB — sesi ini, per Goldfish r3c §3)
+
+- Konteks: Goldfish r3c LAYAK SUBMIT borderline atas — rank ~12–35
+  (tengah ~20), top-50 70–85%, top-10 15–25%. Sisa gap art: M8 depth,
+  M9 peta blob, M10 #11/#6 kasar, minor m2/m4/m5/m6. Aturan tegas:
+  CHASE-TOP-10 (target rank TOP 10, lantai 25, top-50 >=30% target
+  50%+), FOKUS TIDAK DIBATASI, SANGGUP-SANGGUPIN. Edit dalam 3 pesan
+  asisten terpisah (modul baru -> generate.py -> art_scenes.py).
+- Modul BARU art_polish_r3d.py (ditulis dari nol): helper
+  soft_vertical_gradient (per-baris, tanpa garis blok), soft_shadow
+  (3 elips konsentris), sea_glints, sea_edge_vignette, CONTINENTS_V2
+  (186 titik vs 101 r3c), strip_shield_v2, strip_flag_v2.
+  generate.py: import modul baru, peta pakai CONTINENTS_V2, strip #6/#11
+  pakai v2, legenda + REPORTED. art_scenes.py: hanya call-site +
+  import (scene_gulf + scene_cop31). Struktur/fakta/DATE CHECK/UTC/
+  stat strip/ALSO ON/teks headline/deck TIDAK disentuh; lead #2 TIDAK
+  disentuh; PINS tidak disentuh/digeser.
+- M8 — TERTUTUP (sebagian besar): COP31 latar kini gradasi vertikal
+  halus mint -> mint muda -> nyaris putih (digambar dulu, objek tetap
+  di atas) + bayangan lembut di bawah globe; Teluk: bayangan lembut di
+  bawah kedua tanker + 2 kilau air tipis + vignette sangat tipis di
+  tepi kiri/kanan zona laut (atas/bawah sengaja tidak disentuh:
+  label IRAN di atas, daratan tan di bawah). Efeknya sengaja halus —
+  terbaca di crop 2x sebagai kedalaman, bukan sebagai blok gelap.
+- M9 — TERTUTUP: CONTINENTS_V2 — Amerika Utara (lekuk Hudson Bay,
+  Alaska, lancip Meksiko), Amerika Selatan meruncing, Afrika
+  (tonjolan barat + meruncing selatan), Eropa dikenali (Skandinavia,
+  Rusia, Iberia, tumit Italia, Anatolia), Asia (Melayu + India +
+  Arabia + lekuk Teluk Persia), Australia, Greenland, Madagaskar,
+  Jepang, Britania, Selandia Baru dipertahankan. TEMUAN PENTING:
+  diuji point-in-polygon, di r3c pin 1/3/5/6/9 (posisi digambar)
+  jatuh di LAUT; V2 menutup celah itu — kini 12/12 pin darat di atas
+  daratan (uji otomatis + visual crop 2x). Benua kini dikenali.
+- M10 — TERTUTUP: #11 F1 kini 2 roda hitam besar + hub putih +
+  kanopi putih + sayap belakang jelas (kontras di latar gelap,
+  terbaca sebagai mobil F1); #6 jet kini putih/perak terang +
+  jendela kokpit gelap.
+- m4 — TERTUTUP, dengan koreksi jujur: diukur PIL, "3 DOWN" berakhir
+  x+94.6 dan "W" di 57.8–78.7 — starburst lama (x 54–70) menabrak W,
+  dan geser literal +5px (59–75) MASIH di dalam W. Jadi starburst
+  pertama dipindah ke (x+102, y+21) r7, di ujung trail misil-2 —
+  "3 DOWN" kini utuh bersih tanpa sentuhan oranye (crop 2x).
+- m2 — TERTUTUP: legenda kini "... OFFICIAL = official source  •
+  REPORTED = single source" — 480,5px, muat satu baris (batas 626px),
+  terverifikasi visual satu baris penuh.
+- m5 — TERTUTUP: kedua tanker lead #1 dibesarkan ~20% (40x9 -> 48x11,
+  34x8 -> 41x10), tetap terbaca + KHASAB utuh.
+- m6 — TERTUTUP: garis meja COP31 ditebalkan + 2 lembar dokumen putih
+  di depan siluet delegasi (terbaca sebagai kertas di meja).
+- Catatan jujur: asap cerobong tanker-1 masih menjorok ~11px di atas
+  tepi panel (SUDAH ADA di r3c, bukan cacat baru, Goldfish tidak
+  flag) — tidak disentuh supaya tidak merombak _ship.
+- Validasi visual (halaman penuh + crop 2x lead #1, lead #3, peta,
+  strip #6, strip #11, legenda): gradasi COP31 terbaca (atas mint,
+  bawah nyaris putih); bayangan globe ada; bayangan/kilau Teluk
+  halus tapi ada; semua label lead terbaca penuh (IRAN, BAHRAIN,
+  KHASAB, 2 TANKERS HIT, STRAIT OF HORMUZ); benua dikenali; roda +
+  kokpit F1 terbaca; jet #6 putih; "3 DOWN" bersih; tier REPORTED
+  ada; 0 tabrakan/teks terpotong baru; TRUNCATION-RISK: none.
+- Validasi: entry.png baru 219.699 B, sha
+  6f49c2475a6303dce728fd46d68e5ab9c1db7ed6b930b6e3dd5f5662029cc70e,
+  SOI/IEND OK, full decode OK (1024x1024 RGB). main.py HANYA
+  ARTWORK_SIZE + ARTWORK_SHA256; cek venv TANPA PIL (venv baru
+  ~/workspace/tmp-workspace/venv-nopil-r3d — /tmp/venv-nopil lama
+  sudah tidak ada): python3 -P -s main.py exit 0, 2 run ke dir
+  berbeda byte-identical dengan entry.png. TIDAK commit/bundle/check
+  kit — urusan koordinator.

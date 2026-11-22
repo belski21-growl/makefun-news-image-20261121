@@ -12,6 +12,7 @@ Run: python3 generate.py  ->  writes entry.png next to itself.
 from PIL import Image, ImageDraw, ImageFont
 
 import art_scenes  # Storytelling scenes for leads + briefs (rebuild r3c).
+import art_polish_r3d  # Poles r3d: CONTINENTS_V2, strip v2, helper depth.
 
 W, H = 1024, 1024
 PAPER = (246, 241, 231)
@@ -373,7 +374,11 @@ def draw():
         x = bx0 + col * (cw2 + gx2)
         y = by0 + row * (ch2 + gy2)
         # Mini illustration strip (full cell width, 40px tall).
-        art_scenes.STRIPS[icon](d, x, y, cw2, 40)
+        # Poles r3d: strip #6 (shield) + #11 (flag) pakai versi v2
+        # (jet cerah + starburst pindah, F1 beroda); sisanya r3c.
+        strip_fn = art_polish_r3d.STRIPS_V2.get(
+            icon, art_scenes.STRIPS[icon])
+        strip_fn(d, x, y, cw2, 40)
         # Region-coloured left border runs the text area.
         d.rectangle([x, y + 40, x + 3, y + ch2 - 4], fill=REGION_COLORS[region])
         num = str(idx + 4)
@@ -433,7 +438,7 @@ def draw():
            "COP31 final text  •  Las Vegas GP result (Sun 22 Nov)",
            font=SANS(10), fill=INK)
     d.text((dx0 + 12, dy0 + 76),
-           "HOW WE CHECKED:  CONFIRMED = 2+ outlets  •  OFFICIAL = official source",
+           "HOW WE CHECKED:  CONFIRMED = 2+ outlets  •  OFFICIAL = official source  •  REPORTED = single source",
            font=SANS(9), fill=MUTED)
 
     # ---- World map with numbered pins (right column) -----------------------
@@ -443,7 +448,7 @@ def draw():
            font=SANS_B(12), fill=INK)
     map_x, map_y, map_w, map_h = mx0 + 8, my0 + 30, mw - 16, 150
     d.rectangle([map_x, map_y, map_x + map_w, map_y + map_h], fill=MAPSEA)
-    for poly in CONTINENTS:
+    for poly in art_polish_r3d.CONTINENTS_V2:
         pts = [(map_x + fx * map_w, map_y + fy * map_h) for fx, fy in poly]
         d.polygon(pts, fill=MAPLAND)
     # Mercury pin (story 4) in orbit, top right of the map.
