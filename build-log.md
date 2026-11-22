@@ -331,3 +331,43 @@ ditulis ulang mengikuti template top-10 ("The World in One Day").
   sudah tidak ada): python3 -P -s main.py exit 0, 2 run ke dir
   berbeda byte-identical dengan entry.png. TIDAK commit/bundle/check
   kit — urusan koordinator.
+
+## Micro-fix r3e (22 Nov 2026 ~16:00 WIB — sesi ini, per Goldfish r3d)
+
+- Konteks: Goldfish r3d LAYAK SUBMIT — rank ~10–30 (tengah ~17–18),
+  top-50 75–88%, top-10 18–30%. Sisa: 1 minor m7 (asap tanker-1
+  menjorok ~11px di atas tepi panel lead #1) + 1 major sisa M8
+  (depth Teluk masih datar). Aturan tegas: CHASE-TOP-10 (target TOP
+  10, lantai 25), SANGGUP-SANGGUPIN. Time box keras 30 menit.
+- m7 — DIKERJAKAN (clip, bukan geser): `_smoke` di art_scenes.py
+  kini terima param `top` (clip): gumpal yang seluruhnya di atas
+  tepi dilewati, yang sebagian tumpang dipotong rata di tepi —
+  persis tampilan clip sejati. `_ship` terima `clip_top`, kedua
+  kapal lead #1 dipanggil dengan `clip_top=y` (tepi atas panel).
+  _ship TIDAK dirombak (lambung/superstruktur/cerobong utuh);
+  geser kapal ditolak — tanker-1 turun 12px akan menabrak tanker-2
+  (jarak vertikal tinggal 15px) + burst + label KHASAB.
+- M8 — DIKERJAKAN (yakin bersih, verifikasi crop 2x): laut Teluk
+  kini `polish.soft_vertical_gradient` per-baris (biru sedang
+  (52,110,155) atas -> (30,72,108) tengah -> biru gelap (14,38,62)
+  bawah), menggantikan `_bands` 4 blok biru gelap r3c yang terbaca
+  rata. Gradasi terukur di kolom laut bersih: (38,86,125) ->
+  (31,75,112) -> (26,65,99) -> (24,60,92) dari atas ke bawah.
+  Plus satu garis pantai tan terang (238,224,196, width 2)
+  berlekuk mengikuti tepi atas daratan Arabia — 305px terverifikasi,
+  rentang x penuh panel. Label BAHRAIN/KHASAB/2 TANKERS HIT/
+  STRAIT OF HORMUZ/IRAN TIDAK disentuh dan terbaca penuh di crop 2x.
+- Struktur/fakta/DATE CHECK/UTC/stat strip/ALSO ON/peta/brief
+  TIDAK disentuh. TRUNCATION-RISK: none.
+- Validasi visual (halaman penuh + crop 2x tepi atas lead #1 +
+  crop 2x pita laut Teluk): 0 piksel asap (140,140,150) di atas
+  y=230 di rentang lead #1; asap tanker-1 kini terpotong rata di
+  tepi panel; gradasi laut terbaca jelas; garis pantai terlihat;
+  semua label lead utuh; 0 cacat baru di halaman penuh.
+- Validasi: entry.png baru 220.624 B, sha
+  e68e38a26798152acc8dd3bc9e8e131ad5545dd0c87dc80cdc29a16669ed6b2f,
+  SOI/IEND OK, full decode OK (1024x1024 RGB). main.py HANYA
+  ARTWORK_SIZE + ARTWORK_SHA256; cek venv TANPA PIL (venv yang sama
+  ~/workspace/tmp-workspace/venv-nopil-r3d): python3 -P -s main.py
+  exit 0, 2 run ke dir berbeda byte-identical dengan entry.png
+  (sha sama). TIDAK commit/bundle/check kit — urusan koordinator.

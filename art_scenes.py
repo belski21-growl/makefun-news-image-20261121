@@ -67,23 +67,35 @@ def _stars(d, x, y, w, h, n=14, seed=7):
         d.ellipse([sx - r, sy - r, sx + r, sy + r], fill=WHITE)
 
 
-def _smoke(d, cx, cy, r, color=(150, 150, 160)):
-    """Three overlapping puffs rising up-left."""
-    d.ellipse([cx - r, cy - r, cx + r, cy + r], fill=color)
-    d.ellipse([cx - r - 5, cy - r - 4, cx - r + 3, cy + r - 4], fill=color)
-    d.ellipse([cx - r + 2, cy - r - 8, cx + r + 4, cy - r], fill=color)
+def _smoke(d, cx, cy, r, color=(150, 150, 160), top=None):
+    """Three overlapping puffs rising up-left. top: optional clip —
+    nothing is drawn above y=top (panel edge, m7 r3e). Puffs fully
+    above the clip are skipped; partially-overlapping ones are cut
+    flat at the edge, exactly as a true clip would look."""
+    boxes = [
+        [cx - r, cy - r, cx + r, cy + r],
+        [cx - r - 5, cy - r - 4, cx - r + 3, cy + r - 4],
+        [cx - r + 2, cy - r - 8, cx + r + 4, cy - r],
+    ]
+    for b in boxes:
+        if top is not None:
+            if b[3] < top:
+                continue
+            b[1] = max(b[1], top)
+        d.ellipse(b, fill=color)
 
 
-def _ship(d, x, y, w, h, hull=(10, 18, 30)):
+def _ship(d, x, y, w, h, hull=(10, 18, 30), clip_top=None):
     """Recognisable tanker: pointed bow, hull, white superstructure,
-    funnel with smoke. (x, y) = top-left of the hull."""
+    funnel with smoke. (x, y) = top-left of the hull. clip_top: if
+    given, the funnel smoke is clipped at that y (panel edge)."""
     d.polygon([(x, y + 3), (x + w - 8, y + 3), (x + w, y + h // 2),
                (x + w - 8, y + h - 1), (x, y + h - 1)],
               fill=hull, outline=WHITE, width=1)
     # Superstructure (bridge block) + funnel, aft.
     d.rectangle([x + 4, y - 5, x + 12, y + 3], fill=WHITE)
     d.rectangle([x + 14, y - 7, x + 18, y + 3], fill=(150, 40, 40))
-    _smoke(d, x + 16, y - 12, 3, color=(140, 140, 150))
+    _smoke(d, x + 16, y - 12, 3, color=(140, 140, 150), top=clip_top)
     # Waterline highlight.
     d.line([(x + 2, y + h - 2), (x + w - 10, y + h - 2)],
            fill=(120, 170, 210), width=1)
@@ -99,9 +111,13 @@ def scene_gulf(d, x, y, w, h):
     """Strait of Hormuz as a MAP SCENE: tan Iran (top) + tan Arabia
     (bottom), blue Gulf channel with depth bands, Bahrain marked, two
     recognisable tankers, missile arcs, explosions. Labels on the art."""
-    # Sea with depth bands (lighter near the surface, darker deep).
-    _bands(d, x, y, w, h, [(28, 68, 100), (24, 58, 88),
-                           (20, 50, 78), (16, 42, 66)])
+    # Sea: gradasi vertikal HALUS per-baris (M8 r3e) — biru sedang di
+    # atas -> biru gelap di bawah. Menggantikan _bands r3c (4 blok biru
+    # gelap yang terbaca rata); gradasi kini terbaca di crop 2x.
+    # Tetap cukup gelap untuk teks putih (BAHRAIN/KHASAB/2 TANKERS HIT).
+    polish.soft_vertical_gradient(d, x, y, w, h,
+                                 (52, 110, 155), (30, 72, 108),
+                                 (14, 38, 62))
     # Iran (top): tan landmass with a wavy coastline.
     d.polygon([(x, y), (x + w, y), (x + w, y + 12), (x + 260, y + 18),
                (x + 200, y + 22), (x + 130, y + 14), (x + 90, y + 17),
@@ -111,6 +127,12 @@ def scene_gulf(d, x, y, w, h):
                (x + 250, y + h - 18), (x + 200, y + h - 13),
                (x + 120, y + h - 19), (x + 60, y + h - 12), (x, y + h - 15)],
               fill=TAN)
+    # Garis pantai tan terang berlekuk di tepi bawah kanal (M8 r3e) —
+    # mengikuti tepi atas daratan Arabia, digambar sebelum kapal/
+    # bayangan supaya objek duduk di atasnya. Label tidak disentuh.
+    d.line([(x, y + h - 15), (x + 60, y + h - 12), (x + 120, y + h - 19),
+            (x + 200, y + h - 13), (x + 250, y + h - 18), (x + w, y + h - 10)],
+           fill=(238, 224, 196), width=2, joint="curve")
     # Bahrain: red dot with white ring, mid-Gulf.
     bx, by = x + w // 2 - 10, y + h // 2 + 2
     d.ellipse([bx - 7, by - 7, bx + 7, by + 7], fill=RED,
@@ -120,8 +142,10 @@ def scene_gulf(d, x, y, w, h):
     # digambar SEBELUM kapal supaya kapal duduk di atas bayangannya.
     polish.soft_shadow(d, x + w - 72, y + 25, 26, 4, (24, 58, 88))
     polish.soft_shadow(d, x + w - 46, y + h - 19, 23, 4, (16, 42, 66))
-    _ship(d, x + w - 96, y + 12, 48, 11)
-    _ship(d, x + w - 66, y + h - 31, 41, 10)
+    # m7 r3e: asap kedua kapal di-clip di tepi atas panel (y) — asap
+    # tanker-1 sebelumnya menjorok ~11px di atas tepi panel.
+    _ship(d, x + w - 96, y + 12, 48, 11, clip_top=y)
+    _ship(d, x + w - 66, y + h - 31, 41, 10, clip_top=y)
     # Kilau air: garis terang tipis di air terbuka (M8) — A di antara
     # label kiri dan ledakan Bahrain, B di antara Bahrain dan tanker 1.
     polish.sea_glints(d, [(x + 100, y + 24, x + 135, y + 24),
