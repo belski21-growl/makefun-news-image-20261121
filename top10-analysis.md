@@ -109,3 +109,36 @@ GUWAHATI; lead Jumat/Kamis sudah diganti).
 - Peringatan: skor SANGAT padat di puncak (rank 1 vs 50 selisih kecil); satu
   cacat faktual baru bisa menjatuhkan rank jauh. Verifikasi SEMUA fakta baru
   dengan sumber live sebelum menulis.
+
+## Studi ART top 1/10/20 — rebuild r3c (22 Nov ~15:00 WIB, dilihat langsung)
+
+Kenapa art top 10/20 menang duel pairwise vs kita (Goldfish r3b: struktur/fakta
+kita SETARA rank 1, art yang kalah):
+
+1. **Adegan, bukan ikon.** Tiap panel menceritakan BERITANYA: rank 1 #4 kapal +
+   asap + "2 DRONES"; rank 10 #1 delegasi di meja sidang + jam besar + "PAST
+   THE DEADLINE"; rank 10 #3 tiga sosok ditangkap + borgol + stempel FBI TOP
+   TEN + bendera Meksiko; rank 20 #2 satelit berpanel surya + Merkurius
+   berkawah + "8 YEARS • TWO ORBITERS". Panel kita: satu bentuk datar + angka.
+2. **Depth berlapis.** Langit gradasi → midground → foreground: rank 1 Teluk
+   (daratan tan atas + kanal laut biru + daratan bawah), rank 1 gempa (pegunungan
+   berlapis + salju + tanah retak + seismograf), rank 10 #4 skyline malam +
+   rudal + ledakan. Panel kita: satu warna datar.
+3. **Objek dikenali.** Robot bermata merah + antena, borgol + badge, api
+   berlapis (oranye → kuning → putih), mobil F1, bola sepak berpola, jam,
+   grid kalender 9–21 + "+1 DAY" + 1,5°C. Objek kita: batang putih (pesawat),
+   blob hitam (jet), bilah cokelat (bat) — tidak dikenali tanpa label.
+4. **Data sebagai visual.** Grid tanggal, termometer, grafik saham jatuh,
+   jam sidang — angka JADI gambar, bukan cuma teks di bawah gambar.
+5. **Kontras gelap/terang bergantian.** Panel malam gelap (Riyadh, Chapo,
+   BepiColombo) berseling panel terang (COP31, EU, kriket) — halaman berirama.
+6. **Peta dikenali.** Rank 1/10 benua langsung dikenali (Amerika, Afrika,
+   Eropa, Asia + India, Australia); rank 20 kasar tapi tetap berbentuk benua.
+   Peta kita masih blob.
+
+Target rebuild r3c: M4 (brief 4–13 jadi adegan mini berlapis), M5 (COP31 jadi
+adegan: grid 9–21 + "+1 DAY" + 1,5°C), M6 (benua dikenali), lead #1 +kapal
+tanker + label KHASAB, lead #2 +marker episentrum, m1 (kotak kuning #5 geser).
+Struktur/fakta/DATE CHECK JANGAN disentuh. FOKUS TIDAK DIBATASI: kalau
+Goldfish re-review nemu gap lain (struktur/fakta/layout), kejar juga di
+putaran yang sama.

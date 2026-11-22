@@ -11,7 +11,7 @@ Run: python3 generate.py  ->  writes entry.png next to itself.
 """
 from PIL import Image, ImageDraw, ImageFont
 
-import brief_art  # Mini illustrations for the 10 briefs (4-13).
+import art_scenes  # Storytelling scenes for leads + briefs (rebuild r3c).
 
 W, H = 1024, 1024
 PAPER = (246, 241, 231)
@@ -171,22 +171,29 @@ UTC_EVENTS = [
 
 # World map: rough continent polygons in fraction coords (x 0-1, y 0-1).
 CONTINENTS = [
-    [(0.02, 0.10), (0.10, 0.03), (0.20, 0.05), (0.28, 0.10), (0.30, 0.18),
-     (0.24, 0.25), (0.20, 0.30), (0.16, 0.42), (0.12, 0.46), (0.08, 0.38),
-     (0.04, 0.28), (0.01, 0.18)],  # North America
+    [(0.02, 0.10), (0.06, 0.04), (0.14, 0.02), (0.22, 0.04), (0.28, 0.08),
+     (0.30, 0.14), (0.28, 0.20), (0.30, 0.26), (0.26, 0.28), (0.22, 0.32),
+     (0.19, 0.38), (0.16, 0.44), (0.13, 0.42), (0.12, 0.34), (0.08, 0.28),
+     (0.04, 0.22), (0.01, 0.16)],  # North America (Alaska, Hudson Bay, Mexico)
     [(0.32, 0.03), (0.38, 0.02), (0.40, 0.08), (0.35, 0.12), (0.31, 0.08)],  # Greenland
-    [(0.24, 0.48), (0.30, 0.46), (0.34, 0.52), (0.32, 0.66), (0.28, 0.80),
-     (0.25, 0.72), (0.22, 0.58)],  # South America
-    [(0.47, 0.10), (0.55, 0.08), (0.58, 0.14), (0.55, 0.20), (0.50, 0.22),
-     (0.47, 0.16)],  # Europe
-    [(0.47, 0.28), (0.56, 0.26), (0.60, 0.32), (0.58, 0.48), (0.54, 0.60),
-     (0.50, 0.52), (0.47, 0.38)],  # Africa
-    [(0.58, 0.06), (0.75, 0.04), (0.90, 0.08), (0.97, 0.14), (0.92, 0.22),
-     (0.85, 0.30), (0.80, 0.36), (0.76, 0.42), (0.72, 0.46), (0.70, 0.40),
-     (0.68, 0.30), (0.62, 0.20), (0.58, 0.14)],  # Asia (India peninsula)
+    [(0.25, 0.50), (0.30, 0.48), (0.35, 0.50), (0.38, 0.56), (0.36, 0.66),
+     (0.33, 0.78), (0.30, 0.90), (0.27, 0.82), (0.25, 0.68), (0.23, 0.58)],  # South America
+    [(0.45, 0.10), (0.48, 0.05), (0.52, 0.04), (0.55, 0.08), (0.58, 0.12),
+     (0.56, 0.16), (0.54, 0.20), (0.55, 0.24), (0.52, 0.28), (0.50, 0.24),
+     (0.48, 0.20), (0.45, 0.16)],  # Europe
+    [(0.44, 0.32), (0.50, 0.28), (0.56, 0.30), (0.60, 0.36), (0.59, 0.46),
+     (0.57, 0.58), (0.54, 0.70), (0.52, 0.78), (0.50, 0.70), (0.48, 0.58),
+     (0.45, 0.46), (0.42, 0.38)],  # Africa
+    [(0.60, 0.62), (0.62, 0.64), (0.61, 0.70), (0.59, 0.66)],  # Madagascar
+    [(0.58, 0.06), (0.68, 0.02), (0.80, 0.02), (0.92, 0.06), (0.97, 0.12),
+     (0.94, 0.20), (0.88, 0.26), (0.84, 0.32), (0.80, 0.38), (0.76, 0.44),
+     (0.74, 0.48), (0.72, 0.42), (0.70, 0.34), (0.68, 0.28), (0.64, 0.22),
+     (0.60, 0.16), (0.58, 0.12)],  # Asia (India peninsula dip at 0.74,0.48)
     [(0.80, 0.42), (0.83, 0.40), (0.85, 0.44), (0.82, 0.46)],  # SE Asia islands
-    [(0.82, 0.62), (0.90, 0.60), (0.93, 0.66), (0.88, 0.72), (0.83, 0.68)],  # Australia
-    [(0.455, 0.10), (0.468, 0.12), (0.46, 0.15)],  # Britain
+    [(0.90, 0.16), (0.92, 0.18), (0.91, 0.24), (0.89, 0.20)],  # Japan
+    [(0.79, 0.70), (0.83, 0.66), (0.88, 0.67), (0.91, 0.72), (0.90, 0.78),
+     (0.86, 0.82), (0.82, 0.80), (0.79, 0.75)],  # Australia
+    [(0.455, 0.08), (0.468, 0.10), (0.46, 0.14)],  # Britain
     [(0.935, 0.81), (0.968, 0.80), (0.982, 0.86), (0.955, 0.90), (0.935, 0.88)],  # New Zealand
 ]
 # (story number, lon, lat, dx, dy) — dx/dy nudge the pin so the Europe
@@ -232,119 +239,11 @@ def fit_lines(draw, text, font, max_w, max_lines, tag=""):
     return lines
 
 
-# ---- Flat illustrations for the 3 leads -----------------------------------
-def draw_gulf(d, x, y, w, h):
-    """Strait of Hormuz: tan land (Iran top, Arabia bottom), blue Gulf sea,
-    Bahrain marked, two tankers, two explosion starbursts."""
-    import math
-    d.rectangle([x, y, x + w, y + h], fill=(18, 42, 66))
-    # Iran (top) and Arabia (bottom) as tan landmasses.
-    d.polygon([(x, y), (x + w, y), (x + w, y + 14), (x + 200, y + 22),
-               (x + 90, y + 16), (x, y + 20)], fill=(222, 205, 170))
-    d.polygon([(x, y + h), (x + w, y + h), (x + w, y + h - 12),
-               (x + 220, y + h - 20), (x + 110, y + h - 14), (x, y + h - 16)],
-              fill=(222, 205, 170))
-    # The Gulf: lighter sea channel between the lands.
-    d.polygon([(x, y + 20), (x + 90, y + 16), (x + 200, y + 22),
-               (x + w, y + 14), (x + w, y + h - 12), (x + 220, y + h - 20),
-               (x + 110, y + h - 14), (x, y + h - 16)],
-              fill=(28, 68, 100))
-    # Bahrain: red dot with white ring, mid-Gulf.
-    bx, by = x + w // 2 - 10, y + h // 2 + 2
-    d.ellipse([bx - 7, by - 7, bx + 7, by + 7], fill=RED,
-              outline=(255, 255, 255), width=2)
-    # Two tankers: dark hulls with white outline, right side of the Gulf.
-    for tx, ty in [(x + w - 78, y + 14), (x + w - 52, y + h - 26)]:
-        d.rectangle([tx, ty, tx + 34, ty + 9], fill=(10, 18, 30),
-                    outline=(255, 255, 255), width=1)
-        d.rectangle([tx + 6, ty - 5, tx + 12, ty], fill=(10, 18, 30))
-    # Missile arc from Iran down to Bahrain (dashed white).
-    for t in range(0, 11):
-        px = x + w // 2 + 30 + t * 4
-        py = y + 6 + int(14 * math.sin(t / 10.0 * math.pi / 2))
-        d.ellipse([px, py, px + 2, py + 2], fill=(255, 255, 255))
-    # Two orange explosion starbursts: one at Bahrain, one at a tanker.
-    for cx, cy, r in [(bx, by, 13), (x + w - 61, y + 18, 11)]:
-        for k in range(8):
-            a = k * math.pi / 4
-            d.line([(cx, cy), (cx + r * math.cos(a), cy + r * math.sin(a))],
-                   fill=(255, 150, 40), width=3)
-        d.ellipse([cx - 5, cy - 5, cx + 5, cy + 5], fill=(255, 210, 90))
-    # Smoke puffs.
-    d.ellipse([bx - 16, by + 8, bx + 2, by + 20], fill=(120, 120, 130))
-    d.ellipse([x + w - 78, y + 24, x + w - 60, y + 34], fill=(120, 120, 130))
-    # Labels (top entries label their lead art; ours was mute).
-    d.text((bx + 12, by - 6), "BAHRAIN", font=SANS_B(9), fill=(255, 255, 255))
-    # IRAN on the top landmass (dark on tan); the strait named in the
-    # sea channel, stacked under the tanker label.
-    d.text((x + 10, y + 4), "IRAN", font=SANS_B(9), fill=(17, 17, 17))
-    d.text((x + 8, y + 21), "2 TANKERS HIT", font=SANS_B(8),
-           fill=(255, 255, 255))
-    d.text((x + 8, y + 31), "STRAIT OF HORMUZ", font=SANS_B(8),
-           fill=(255, 255, 255))
-
-
-def draw_quake(d, x, y, w, h):
-    d.rectangle([x, y, x + w, y + h], fill=(232, 220, 190))
-    # Andes triangles.
-    d.polygon([(x, y + h), (x + 70, y + 12), (x + 140, y + h)], fill=(150, 110, 70))
-    d.polygon([(x + 110, y + h), (x + 200, y + 4), (x + 300, y + h)],
-              fill=(120, 88, 54))
-    d.polygon([(x + 185, y + 18), (x + 200, y + 4), (x + 215, y + 18)],
-              fill=(245, 240, 225))
-    # Ground + cracks.
-    d.rectangle([x, y + h - 18, x + w, y + h], fill=(176, 138, 88))
-    d.line([(x + 40, y + h - 18), (x + 70, y + h - 8), (x + 95, y + h - 18),
-            (x + 130, y + h - 6)], fill=(90, 60, 30), width=2)
-    d.line([(x + 210, y + h - 18), (x + 240, y + h - 7), (x + 275, y + h - 18)],
-           fill=(90, 60, 30), width=2)
-    # Seismograph trace in red.
-    pts = []
-    import math
-    for i in range(0, w + 1, 6):
-        amp = 2 if i < w * 0.3 or i > w * 0.75 else 12
-        yy = y + h // 2 + (amp * math.sin(i / 3.0) if i % 12 else -amp)
-        pts.append((x + i, yy))
-    d.line(pts, fill=RED, width=2)
-    # Depth label (top entries carry it: 108 km, per USGS/IGP consensus).
-    d.text((x + w - 88, y + h - 16), "108 km deep", font=SANS_B(9),
-           fill=(255, 255, 255))
-    # Place labels (top entries carry them: ONCORES, LIMA).
-    d.text((x + 245, y + 6), "ONCORES", font=SANS_B(9), fill=(17, 17, 17))
-    d.text((x + 8, y + h - 14), "LIMA", font=SANS_B(9),
-           fill=(255, 255, 255))
-
-
-def draw_cop31(d, x, y, w, h):
-    """COP31: globe + thermometer + delegate silhouettes + calendar."""
-    d.rectangle([x, y, x + w, y + h], fill=(222, 236, 220))
-    # Globe (left): blue circle, green land blobs.
-    gx, gy, gr = x + 42, y + 30, 24
-    d.ellipse([gx - gr, gy - gr, gx + gr, gy + gr], fill=(31, 78, 121))
-    d.polygon([(gx - 14, gy - 6), (gx - 2, gy - 12), (gx + 8, gy - 4),
-               (gx + 2, gy + 6), (gx - 10, gy + 4)], fill=(60, 160, 90))
-    d.polygon([(gx + 2, gy + 10), (gx + 12, gy + 10), (gx + 10, gy + 18),
-               (gx, gy + 16)], fill=(60, 160, 90))
-    # Thermometer (right of globe): white tube, red mercury rising.
-    tx = x + 92
-    d.rectangle([tx, y + 8, tx + 10, y + h - 14], fill=(255, 255, 255),
-                outline=(17, 17, 17), width=1)
-    d.rectangle([tx + 2, y + 12, tx + 8, y + h - 18], fill=RED)
-    d.ellipse([tx - 3, y + h - 22, tx + 13, y + h - 6], fill=RED)
-    # Delegate silhouettes along the bottom.
-    for i in range(9):
-        dx = x + 130 + i * 20
-        d.ellipse([dx, y + h - 26, dx + 10, y + h - 16], fill=(17, 17, 17))
-        d.rectangle([dx - 2, y + h - 16, dx + 12, y + h - 2], fill=(17, 17, 17))
-    # Calendar (top right): white page, red "21".
-    cx, cy = x + w - 62, y + 6
-    d.rectangle([cx, cy, cx + 48, cy + 34], fill=(255, 255, 255),
-                outline=(17, 17, 17), width=1)
-    d.rectangle([cx, cy, cx + 48, cy + 10], fill=RED)
-    d.text((cx + 14, cy + 12), "21", font=SANS_B(16), fill=RED)
-
-
-LEAD_ART = [draw_gulf, draw_quake, draw_cop31]
+# ---- Lead scenes (322 x 58): layered storytelling scenes ----------
+# Rebuild r3c: the art lives in art_scenes.py (scene_gulf, scene_quake,
+# scene_cop31) — Gulf map scene with tankers + KHASAB, quake cross-section
+# with epicentre rings, COP31 data scene with 9-21 grid + '+1 DAY' + 1.5C.
+LEAD_ART = art_scenes.LEAD_SCENES
 
 
 def chip(d, x, y, text):
@@ -367,86 +266,11 @@ def chip_small(d, right, y, text):
     return w
 
 
-# ---- Mini icons for briefs 4-13 (26x26 box) -------------------------------
-def icon_planet(d, x, y):
-    d.ellipse([x + 4, y + 4, x + 22, y + 22], fill=(205, 120, 50))
-    d.ellipse([x + 8, y + 8, x + 13, y + 13], fill=(160, 85, 35))
-    d.rectangle([x + 1, y + 11, x + 4, y + 15], fill=(120, 120, 130))
-    d.rectangle([x + 22, y + 11, x + 25, y + 15], fill=(120, 120, 130))
-
-
-def icon_flame(d, x, y):
-    d.polygon([(x + 13, y + 2), (x + 20, y + 10), (x + 22, y + 16),
-               (x + 18, y + 23), (x + 8, y + 23), (x + 4, y + 16),
-               (x + 6, y + 10)], fill=(255, 120, 30))
-    d.polygon([(x + 13, y + 10), (x + 17, y + 15), (x + 16, y + 20),
-               (x + 10, y + 20), (x + 9, y + 15)], fill=(255, 210, 90))
-
-
-def icon_shield(d, x, y):
-    d.polygon([(x + 13, y + 2), (x + 23, y + 6), (x + 23, y + 14), (x + 13, y + 24),
-               (x + 3, y + 14), (x + 3, y + 6)], fill=(31, 78, 121))
-    d.line([(x + 8, y + 13), (x + 12, y + 17), (x + 19, y + 9)],
-           fill=(255, 255, 255), width=2)
-
-
-def icon_cuffs(d, x, y):
-    d.ellipse([x + 2, y + 8, x + 12, y + 18], outline=(17, 17, 17), width=3)
-    d.ellipse([x + 14, y + 8, x + 24, y + 18], outline=(17, 17, 17), width=3)
-    d.line([(x + 12, y + 13), (x + 14, y + 13)], fill=(17, 17, 17), width=2)
-    d.ellipse([x + 5, y + 11, x + 9, y + 15], fill=(17, 17, 17))
-    d.ellipse([x + 17, y + 11, x + 21, y + 15], fill=(17, 17, 17))
-
-
-def icon_chip(d, x, y):
-    d.rectangle([x + 5, y + 5, x + 21, y + 21], fill=(17, 17, 17))
-    d.rectangle([x + 9, y + 9, x + 17, y + 17], outline=(255, 214, 120), width=1)
-    for i in range(3):
-        d.line([(x + 8 + i * 5, y + 2), (x + 8 + i * 5, y + 5)], fill=(17, 17, 17), width=2)
-        d.line([(x + 8 + i * 5, y + 21), (x + 8 + i * 5, y + 24)], fill=(17, 17, 17), width=2)
-        d.line([(x + 2, y + 8 + i * 5), (x + 5, y + 8 + i * 5)], fill=(17, 17, 17), width=2)
-        d.line([(x + 21, y + 8 + i * 5), (x + 24, y + 8 + i * 5)], fill=(17, 17, 17), width=2)
-
-
-def icon_euro(d, x, y):
-    d.ellipse([x + 2, y + 2, x + 24, y + 24], fill=(31, 78, 121))
-    d.text((x + 7, y + 5), "€", font=SANS_B(14), fill=(255, 214, 120))
-
-
-def icon_magnifier(d, x, y):
-    d.ellipse([x + 3, y + 3, x + 17, y + 17], outline=(17, 17, 17), width=3)
-    d.line([(x + 15, y + 15), (x + 23, y + 23)], fill=(17, 17, 17), width=3)
-
-
-def icon_flag(d, x, y):
-    d.line([(x + 5, y + 2), (x + 5, y + 24)], fill=(17, 17, 17), width=2)
-    for r in range(2):
-        for c in range(3):
-            if (r + c) % 2 == 0:
-                d.rectangle([x + 6 + c * 6, y + 3 + r * 6, x + 11 + c * 6, y + 8 + r * 6],
-                            fill=(17, 17, 17))
-
-
-def icon_cricket(d, x, y):
-    d.ellipse([x + 13, y + 13, x + 23, y + 23], fill=(176, 30, 36))
-    d.arc([x + 13, y + 13, x + 23, y + 23], start=40, end=140,
-          fill=(255, 255, 255), width=1)
-    d.polygon([(x + 3, y + 3), (x + 7, y + 5), (x + 13, y + 13), (x + 10, y + 16),
-               (x + 5, y + 8)], fill=(200, 160, 100))
-
-
-def icon_star(d, x, y):
-    d.ellipse([x + 2, y + 2, x + 24, y + 24], fill=(31, 78, 121))
-    cx, cy = x + 13, y + 13
-    d.polygon([(cx, cy - 9), (cx + 2, cy - 2), (cx + 9, cy), (cx + 2, cy + 2),
-               (cx, cy + 9), (cx - 2, cy + 2), (cx - 9, cy), (cx - 2, cy - 2)],
-              fill=(255, 255, 255))
-
-
-ICONS = {"planet": icon_planet, "flame": icon_flame, "shield": icon_shield,
-         "cuffs": icon_cuffs, "chip": icon_chip, "euro": icon_euro,
-         "magnifier": icon_magnifier, "flag": icon_flag,
-         "cricket": icon_cricket, "star": icon_star}
+# ---- Brief strips (190 x 40): mini-SCENES, not icons ----------------
+# Rebuild r3c: the strips live in art_scenes.py (STRIPS dict) — each strip
+# is a layered scene (gradient sky -> objects -> big number), e.g. satellite
+# with blue solar panels, layered flames, jet silhouette, F1 car, bat+ball.
+# (brief_art.py keeps the old flat strips for reference; not imported.)
 
 
 def draw():
@@ -549,7 +373,7 @@ def draw():
         x = bx0 + col * (cw2 + gx2)
         y = by0 + row * (ch2 + gy2)
         # Mini illustration strip (full cell width, 40px tall).
-        brief_art.ART[icon](d, x, y, cw2, 40)
+        art_scenes.STRIPS[icon](d, x, y, cw2, 40)
         # Region-coloured left border runs the text area.
         d.rectangle([x, y + 40, x + 3, y + ch2 - 4], fill=REGION_COLORS[region])
         num = str(idx + 4)

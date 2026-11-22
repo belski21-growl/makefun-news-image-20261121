@@ -223,3 +223,43 @@ ditulis ulang mengikuti template top-10 ("The World in One Day").
   5. main.py diperbarui ke ukuran + sha256 baru.
 - Validasi: entry.png baru 196.311 B, sha 89e401cef5d135cc44a7828bdfe49abc9d2f21cb6be314cdc4b009aa072bd865, SOI/IEND OK, full decode OK (1024×1024 RGB), TRUNCATION-RISK: none. main.py lolos cek venv TANPA PIL (python3 -P -s, exit 0, 2 run byte-identical, PIL tidak bisa di-import di venv).
 - M1 (ilustrasi mini brief) TIDAK dikerjakan — layout tidak muat, sudah diputuskan (plafon skor tetap di bawah garis hadiah tanpa M1).
+
+## Rebuild art r3c (22 Nov ~15:00 WIB — sesi ini, per perintah tegas user)
+
+- Konteks: Goldfish r3b LAYAK LANJUT (borderline) — rank ~25–60 (tengah ~30–50),
+  peluang top 50 ~45–60%, top 25 ~30–45%, top 10 ~5–10%. Gap tersisa KUALITAS
+  ART, bukan struktur (M4 brief masih bentuk datar primitif, M5 COP31 masih
+  ikon, M6 peta blob). User 14:56 WIB: "tingkatkan kualitas artnya, kalo perlu
+  rebuild ulang. Pegang aturan tegas itu, gak ada alasan ketinggalan kualitas
+  art." + aturan FOKUS TIDAK DIBATASI (22 Nov ~14:58 WIB): kejar SEMUA
+  kekurangan yang menghalangi top 10, bukan cuma satu area.
+- Skill art yang dipakai (semua dibaca penuh): canvas-design (adegan bercerita,
+  depth berlapis, craftsmanship), design-dna (token + style + effects),
+  algorithmic-art (pola deterministik, tanpa randomness), image-entry
+  (verifikasi SOI/EOI + full decode + 2-run byte-identical).
+- Studi art top 1/10/20 dilihat langsung + ditulis di top10-analysis.md
+  (bagian "Studi ART top 1/10/20"): adegan bukan ikon, depth berlapis,
+  objek dikenali, data sebagai visual, kontras gelap/terang, peta dikenali.
+- Rebuild (modul BARU art_scenes.py, ditulis dari nol):
+  1. Lead #1 Teluk: kanal laut berlapis (depth bands), kapal tanker dikenali
+     (lambung + superstruktur + cerobong + asap) x2, busur rudal x2, label
+     KHASAB ditambahkan.
+  2. Lead #2 Gempa: pegunungan berlapis (salju + sisi teduh), marker episentrum
+     (cincin konsentris + bintang merah).
+  3. Lead #3 COP31: ADEGAN DATA ala rank 1 — grid tanggal 9–21 (21 merah) +
+     "NOV 9–20 SCHEDULED" + "+1 DAY" + termometer 1.5°C + globe + delegasi.
+  4. Brief 4–13: tiap strip jadi adegan mini berlapis — #4 satelit panel surya
+     biru + Merkurius berkawah, #5 api berlapis + skyline (jendela dijauhkan
+     dari teks, m1 TERTUTUP), #6 rudal + jet dikenali, #7 borgol + sorot lampu
+     + badge FBI, #8 papan sirkuit + chip emas, #9 medali € + cincin bintang,
+     #10 kaca pembesar + figur bayangan + X merah, #11 bendera kotak berkibar +
+     mobil F1, #12 bat + bola berjahit + stumps, #13 jet putih + skyline
+     Warsawa + bintang NATO.
+  5. M6 peta: poligon benua ditulis ulang dengan lebih banyak titik (Amerika
+     Utara/Selatan, Afrika, Eropa, Asia + India + Jepang + Madagaskar,
+     Australia) — kini dikenali, setara rank 20.
+  6. Struktur/fakta/DATE CHECK/UTC/stat strip TIDAK disentuh.
+- Validasi visual: halaman penuh + crop 3x (Teluk, COP31, gempa, brief 4/5/7/13,
+  baris brief 1+2, peta) — 0 tabrakan, 0 teks terpotong; m1 (kotak kuning #5)
+  TERTUTUP; grid COP31 9–21 terbaca penuh; semua label lead terbaca.
+- Validasi: entry.png baru 217.521 B, sha 343479fff05ad69936c1a951c0f6fbd076fb8d9fd004e8e7a7537e511d932e72, SOI/IEND OK, full decode OK (1024×1024 RGB), TRUNCATION-RISK: none. main.py lolos cek venv TANPA PIL (python3 -P -s, exit 0, 2 run byte-identical, py_compile OK).
